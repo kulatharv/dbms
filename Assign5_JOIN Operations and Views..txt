@@ -1,0 +1,69 @@
+CREATE TABLE department (
+    deptno NUMBER PRIMARY KEY,
+    dname VARCHAR2(30),
+    location VARCHAR2(30)
+);
+
+CREATE TABLE employee (
+    empno NUMBER PRIMARY KEY,
+    ename VARCHAR2(50),
+    job VARCHAR2(30),
+    salary NUMBER,
+    deptno NUMBER,
+    CONSTRAINT fk_dept FOREIGN KEY (deptno)
+    REFERENCES department(deptno)
+);
+
+INSERT INTO department VALUES (10, 'HR', 'Pune');
+INSERT INTO department VALUES (20, 'IT', 'Mumbai');
+INSERT INTO department VALUES (30, 'Sales', 'Nashik');
+INSERT INTO department VALUES (40, 'Admin', 'Nagpur');
+
+INSERT INTO employee VALUES (101, 'Amit', 'Manager', 50000, 10);
+INSERT INTO employee VALUES (102, 'Ravi', 'Clerk', 20000, 10);
+INSERT INTO employee VALUES (103, 'Neha', 'Analyst', 40000, 20);
+INSERT INTO employee VALUES (104, 'Sita', 'Manager', 60000, 20);
+INSERT INTO employee VALUES (105, 'Raj', 'Salesman', 30000, 30);
+
+COMMIT;
+
+
+SELECT e.empno, e.ename, e.job, e.salary, d.dname
+FROM employee e
+INNER JOIN department d
+ON e.deptno = d.deptno;
+
+SELECT e.empno, e.ename, d.dname
+FROM employee e
+LEFT JOIN department d
+ON e.deptno = d.deptno;
+
+SELECT e.ename, d.dname
+FROM employee e
+RIGHT JOIN department d
+ON e.deptno = d.deptno;
+
+SELECT e.ename, d.dname
+FROM employee e
+FULL OUTER JOIN department d
+ON e.deptno = d.deptno;
+
+SELECT e1.ename AS emp1, e2.ename AS emp2, e1.deptno
+FROM employee e1, employee e2
+WHERE e1.deptno = e2.deptno
+AND e1.empno <> e2.empno;
+
+CREATE VIEW emp_dept_view AS
+SELECT e.empno, e.ename, e.salary, d.dname
+FROM employee e
+JOIN department d
+ON e.deptno = d.deptno;
+
+SELECT * FROM emp_dept_view;
+
+CREATE VIEW high_salary_view AS
+SELECT empno, ename, salary
+FROM employee
+WHERE salary > 40000;
+
+DROP VIEW high_salary_view;

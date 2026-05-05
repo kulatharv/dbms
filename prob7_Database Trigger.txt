@@ -1,0 +1,42 @@
+CREATE TABLE Library (
+    Book_id NUMBER PRIMARY KEY,
+    Book_name VARCHAR2(50),
+    Author VARCHAR2(50)
+);
+
+CREATE TABLE Library_Audit (
+    Book_id NUMBER,
+    Book_name VARCHAR2(50),
+    Author VARCHAR2(50),
+    Action VARCHAR2(20),
+    Action_Date DATE
+);
+
+INSERT INTO Library VALUES (1, 'DBMS', 'Korth');
+INSERT INTO Library VALUES (2, 'Java', 'James');
+
+COMMIT;
+
+CREATE OR REPLACE TRIGGER trg_library_audit
+BEFORE UPDATE OR DELETE ON Library
+FOR EACH ROW
+BEGIN
+    IF UPDATING THEN
+        INSERT INTO Library_Audit
+        VALUES (:OLD.Book_id, :OLD.Book_name, :OLD.Author, 'UPDATE', SYSDATE);
+
+    ELSIF DELETING THEN
+        INSERT INTO Library_Audit
+        VALUES (:OLD.Book_id, :OLD.Book_name, :OLD.Author, 'DELETE', SYSDATE);
+    END IF;
+END;
+/
+
+UPDATE Library
+SET Book_name = 'DBMS Concepts'
+WHERE Book_id = 1;
+
+DELETE FROM Library
+WHERE Book_id = 2;
+
+SELECT * FROM Library_Audit;
